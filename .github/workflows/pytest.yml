@@ -1,0 +1,70 @@
+name: Unit Tests
+on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+    branches:
+      - main
+      - master
+      - prod
+      - production
+      - qa
+      - dev
+      - development
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+
+      - name: Install poetry
+        run: |
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Configure poetry
+        env:
+          FURY_ORG: ${{ secrets.FURY_ORG }}
+          FURY_AUTH: ${{ secrets.FURY_AUTH }}
+        run: |
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+          poetry config virtualenvs.in-project true
+          poetry config repositories.gemfury "https://pypi.fury.io/${FURY_ORG}/"
+          poetry config http-basic.gemfury "${FURY_AUTH}" "${FURY_AUTH}"
+
+      - name: Cache virtualenv
+        uses: actions/cache@v2
+        id: venv_cache
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Cache pre-commit
+        uses: actions/cache@v2
+        id: precommit_cache
+        with:
+          path: ~/.cache/pre-commit
+          key: precommit-${{ runner.os }}-${{ hashFiles('pre-commit-config.yaml', 'pre-commit-hooks.yaml') }}
+
+      - name: Ensure venv cache is healthy
+        if: steps.venv_cache.outputs.cache-hit == 'true'
+        run: timeout 10s poetry run pip --version || rm -rf .venv
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Install pytest plugin
+        run: |
+          poetry run pip install pytest-github-actions-annotate-failures
+
+      - name: Run test suite
+        run: |
+          poetry run pre-commit run --all-files

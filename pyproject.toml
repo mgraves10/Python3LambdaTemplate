@@ -1,0 +1,93 @@
+[tool.poetry]
+name = "pylambda"
+version = "0.1.0"
+description = "A Python Lambda"
+authors = ["mgraves10"]
+readme = "README.md"
+
+# private repo
+[[tool.poetry.source]]
+name = "gemfury"
+url = "https://pypi.fury.io/mgraves10/"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+pytest-cov = "^3.0.0"
+pytest-mock = "^3.7.0"
+pytest-sugar = "^0.9.4"
+pre-commit = "^2.17.0"
+deepdiff = "^5.7.0"
+httpretty = "^1.1.4"
+typing-extensions = "^4.1.1"
+zipp = "^3.7.0"
+flatdict = "^4.0.1"
+black = "^22.1.0"
+mypy = "^0.942"
+flake8 = "^4.0.1"
+boto3 = "^1.21.31"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+py_version = 39
+profile = "black"
+force_single_line = true
+combine_as_imports = true
+lines_between_types = 1
+lines_after_imports = 2
+src_paths = ["src", "tests"]
+extend_skip = ["setup.py"]
+
+
+[tool.black]
+target-version = ['py39']
+experimental_string_processing = true
+force-exclude = '''
+.*/setup\.py$
+'''
+exclude = '''
+/(
+    \.eggs          # exclude a few common directories in the
+  | \.git           # root of the project
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | migrations
+)/
+'''
+
+[tool.mypy]
+check_untyped_defs = true
+ignore_missing_imports = true
+show_error_codes = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unused_ignores = true
+files = "src"
+
+[tool.coverage.report]
+precision = 2
+skip_covered = true
+show_missing = true
+fail_under = 90
+exclude_lines = [
+  '\.\.\.',
+  'pragma: no cover',
+  ]
+
+[tool.coverage.paths]
+source = ["src"]
+
+[tool.coverage.run]
+branch = false
+source = ["src"]

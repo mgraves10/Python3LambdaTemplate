@@ -1,0 +1,40 @@
+# IDE configs
+.vscode/*
+.idea/*
+.ionide/*
+
+# OSX pollution
+*.DS_STORE
+
+# Compiled python
+*.pyc
+
+# Archives/Big files
+*.zip
+*.tar.gz
+
+# Packages
+*.egg
+!/tests/**/*.egg
+/*.egg-info
+/dist/*
+build
+_build
+.cache
+*.so
+*docker-cache/
+*docker_cache/
+pip-wheel-metadata
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports / linting
+.coverage
+.tox
+.pytest_cache
+.mypy_cache
+
+# python env
+.python-version
+.venv
